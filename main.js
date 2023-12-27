@@ -40,90 +40,94 @@ async function parcelamentos(cpf) {
     try {
         const dados = await lerArquivoJson();
         const saida = dados.filter(item => item.CPF.includes(cpf));
-        for (let i = 0; i < saida.length; i++) {
-            const lista = saida[i];
-    
-            if ((lista["SITUACAO"] === "DEFERIDO E CONSOLIDADO" || lista["SITUACAO"] === "AGUARDANDO DEFERIMENTO") && lista["NUMERO PARCELAS"] > 12) {
-    
-                let prima;
-                let primo;
-                let cnpj = lista['CPF']
-                let data_parcelamento = lista['MES']
-                let modalidade = lista['TIPO']
-                let nome_empresa = lista['NOME']
-                let qnt_parcelas = lista['NUMERO PARCELAS']
-                let valor_consolidado =  parseFloat(lista['VALOR PARCELAD'].replace('.', '').replace(',','.'));
-                let valor_principal = parseFloat(lista['VALOR PRINCIPAL'].replace('.', '').replace(',','.'));
-                let valor_parcelas;
-                let qnt_parcelas_reducao;
-                if (lista['TIPO'].indexOf("TRANSACAO EXCEPCIONAL") !== -1){
-                    if(lista['TIPO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
-                        valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/48
-                        prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/48')
-                    } else {
-                        valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/(qnt_parcelas-12)
-                        prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/(qnt_parcelas-12)')
+        if(saida.length > 0){
+            for (let i = 0; i < saida.length; i++) {
+                const lista = saida[i];
+        
+                if ((lista["SITUACAO"] === "DEFERIDO E CONSOLIDADO" || lista["SITUACAO"] === "AGUARDANDO DEFERIMENTO") && lista["NUMERO PARCELAS"] > 12) {
+        
+                    let prima;
+                    let primo;
+                    let cnpj = lista['CPF']
+                    let data_parcelamento = lista['MES']
+                    let modalidade = lista['TIPO']
+                    let nome_empresa = lista['NOME']
+                    let qnt_parcelas = lista['NUMERO PARCELAS']
+                    let valor_consolidado =  parseFloat(lista['VALOR PARCELAD'].replace('.', '').replace(',','.'));
+                    let valor_principal = parseFloat(lista['VALOR PRINCIPAL'].replace('.', '').replace(',','.'));
+                    let valor_parcelas;
+                    let qnt_parcelas_reducao;
+                    if (lista['TIPO'].indexOf("TRANSACAO EXCEPCIONAL") !== -1){
+                        if(lista['TIPO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
+                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/48
+                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/48')
+                        } else {
+                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/(qnt_parcelas-12)
+                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/(qnt_parcelas-12)')
+                        }
+                        
+                    } else if (lista["MODALIDADE"].indexOf("TRANSACAO EXTRAORDINARIA") !== -1){
+                        if (lista['TIPO'].indexOf("PREVIDENCIARIO") !== -1) {
+                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/48
+                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/48')
+                        } else {
+                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/(qnt_parcelas-12)
+                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/(qnt_parcelas-12)')
+                        }
+                    } else if (lista['TIPO'].indexOf("EDITAL") !== -1){
+                        if (lista['TIPO'].indexOf("PREVIDENCIARIO") !== -1) {
+                            if (lista["MODALIDADE"].indexOf("PEQUENO PORTE") !== -1) {
+                                valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/48
+                                prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/48')
+                            } else {
+                                valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/54
+                                prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/54')
+                            }
+                        } else {
+                            if (lista["MODALIDADE"].indexOf("PEQUENO PORTE") !== -1) {
+                                valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-12)
+                                prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-12)')
+                            } else {
+                                valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-6)
+                                prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-6)')
+                            }
+                        }
+                    } else if (lista['TIPO'].indexOf("CONVENCIONAL") !== -1 || lista['TIPO'].indexOf("PARCELAMENTO DA RECUPERACAO JUDICIAL") !== -1){
+                        if (lista['TIPO'].indexOf("NAO PREVIDENCIARIA") !== -1) {
+                            valor_parcelas = valor_consolidado/qnt_parcelas
+                            prima = console.log('valor_parcelas = valor_principal/qnt_parcelas')
+                        } else {
+                            valor_parcelas = valor_consolidado/60
+                            prima = console.log('valor_parcelas = valor_principal/60')
+                        }
+                    } else if (lista['TIPO'].indexOf("PERT") !== -1) {
+                        if (lista['TIPO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
+                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/60
+                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/60')
+                        } else {
+                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/qnt_parcelas
+                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/qnt_parcelas')
+                        }
                     }
+        
+        
+        
+                    if (lista["TIPO"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("PREVIDENCIARIO") !== -1) {
+                        qnt_parcelas_reducao = 60
+                    } else {
+                        qnt_parcelas_reducao = 145
+                    }
+        
+                    inserirTabelas(cpf, data_parcelamento, modalidade, nome_empresa, qnt_parcelas, valor_consolidado, valor_principal, valor_parcelas, qnt_parcelas_reducao)
                     
-                } else if (lista["MODALIDADE"].indexOf("TRANSACAO EXTRAORDINARIA") !== -1){
-                    if (lista['TIPO'].indexOf("PREVIDENCIARIO") !== -1) {
-                        valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/48
-                        prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/48')
-                    } else {
-                        valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/(qnt_parcelas-12)
-                        prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/(qnt_parcelas-12)')
-                    }
-                } else if (lista['TIPO'].indexOf("EDITAL") !== -1){
-                    if (lista['TIPO'].indexOf("PREVIDENCIARIO") !== -1) {
-                        if (lista["MODALIDADE"].indexOf("PEQUENO PORTE") !== -1) {
-                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/48
-                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/48')
-                        } else {
-                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/54
-                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/54')
-                        }
-                    } else {
-                        if (lista["MODALIDADE"].indexOf("PEQUENO PORTE") !== -1) {
-                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-12)
-                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-12)')
-                        } else {
-                            valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-6)
-                            prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-6)')
-                        }
-                    }
-                } else if (lista['TIPO'].indexOf("CONVENCIONAL") !== -1 || lista['TIPO'].indexOf("PARCELAMENTO DA RECUPERACAO JUDICIAL") !== -1){
-                    if (lista['TIPO'].indexOf("NAO PREVIDENCIARIA") !== -1) {
-                        valor_parcelas = valor_consolidado/qnt_parcelas
-                        prima = console.log('valor_parcelas = valor_principal/qnt_parcelas')
-                    } else {
-                        valor_parcelas = valor_consolidado/60
-                        prima = console.log('valor_parcelas = valor_principal/60')
-                    }
-                } else if (lista['TIPO'].indexOf("PERT") !== -1) {
-                    if (lista['TIPO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
-                        valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/60
-                        prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/60')
-                    } else {
-                        valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/qnt_parcelas
-                        prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/qnt_parcelas')
-                    }
+                    
                 }
-    
-    
-    
-                if (lista["TIPO"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("PREVIDENCIARIO") !== -1) {
-                    qnt_parcelas_reducao = 60
-                } else {
-                    qnt_parcelas_reducao = 145
-                }
-    
-                inserirTabelas(cpf, data_parcelamento, modalidade, nome_empresa, qnt_parcelas, valor_consolidado, valor_principal, valor_parcelas, qnt_parcelas_reducao)
+            
                 
                 
             }
-        
-            
-            
+        }else{
+            alert("CPF NÃO ENCONTRADO")
         }
     } catch (erro) {
         console.error('Erro ao filtrar por CPF:', erro);
@@ -294,7 +298,7 @@ function minhaFuncaoDeObservacao(mutationsList, observer) {
         }
     }
       
-    var intervalId = setInterval(procurarTag, 100);
+    var intervalId = setInterval(procurarTag, 1000);
 }
 
 var alvo = document.querySelector('body');
@@ -313,7 +317,3 @@ window.addEventListener("resize", minhaFuncaoDeRedimensionamento);
 
 // Certifique-se de que a função seja executada quando a página for carregada
 // para lidar com a primeira renderização
-
-  
-  
-  
