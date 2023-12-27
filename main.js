@@ -137,7 +137,7 @@ async function parcelamentos(cpf) {
 
 
 function inserirTabelas(cnpj, data, modalidade, nome_empresa, qnt_parcelas, valor_consolidado, valor_principal, valor_parcelas, qnt_parcelas_reducao) {
-    let reducao = (valor_consolidado-valor_principal)*0.85
+    let reducao = (valor_consolidado-valor_principal)*0.92
     let principal_assessoria = valor_consolidado-reducao
     let entrada = (principal_assessoria*0.06)
     let primeiro_ano =  entrada/12
