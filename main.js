@@ -228,26 +228,20 @@ function inserirTabelas(cnpj, data, modalidade, nome_empresa, qnt_parcelas, valo
 
 
 function formatarNumero(numero) {
-    // Converte o número para string e arredonda para duas casas decimais
     const numeroFormatado = parseFloat(numero).toFixed(2);
   
-    // Divide em parte inteira e decimal
     const partes = numeroFormatado.split('.');
     const parteInteira = partes[0];
     const parteDecimal = partes[1];
   
-    // Formata a parte inteira adicionando um ponto a cada três dígitos da direita para a esquerda
     const parteInteiraFormatada = parteInteira.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   
-    // Retorna a parte inteira e decimal formatadas
     return parteInteiraFormatada + ',' + parteDecimal;
 }
 
 function formatarCNPJ(cnpj) {
-    // Remove caracteres não numéricos
     const numerosCNPJ = cnpj.replace(/\D/g, '');
   
-    // Formata o CNPJ com máscara
     return numerosCNPJ.replace(
       /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
       '$1.$2.$3/$4-$5'
@@ -257,7 +251,6 @@ function formatarCNPJ(cnpj) {
 
 
 function formatarCPF(cpf) {
-    // Remove caracteres não numéricos do CPF
     let cpfLimpo;
     if(cpf.slice(0,3) === "XXX"){
         return cpf
@@ -286,9 +279,7 @@ function minhaFuncaoDeRedimensionamento() {
 
 function minhaFuncaoDeObservacao(mutationsList, observer) {
     function procurarTag() {
-        // Selecione a tag que você está procurando
         var minhaTag = document.querySelector("body > table:nth-child(2) > thead > tr > th.nome-empresa");
-        // Verifique se a tag existe
         if (minhaTag) {
           console.log('A tag foi encontrada:', minhaTag);
           clearInterval(intervalId); // Pare o intervalo após encontrar a tag
@@ -309,11 +300,6 @@ var configuracaoObservador = { childList: true, subtree: true };
 
 observer.observe(alvo, configuracaoObservador);
 
-// Inicia a observação do nó-alvo com as opções
-
-
-// Adicione um ouvinte de evento para o evento "resize" na janela (window)
 window.addEventListener("resize", minhaFuncaoDeRedimensionamento);
 
-// Certifique-se de que a função seja executada quando a página for carregada
-// para lidar com a primeira renderização
+
