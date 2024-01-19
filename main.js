@@ -112,7 +112,7 @@ async function parcelamentos(cpf) {
         
         
         
-                    if (lista["TIPO"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("PREVIDENCIARIO") !== -1) {
+                    if (lista["TIPO"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("DIVIDA PREVIDENCIARIA") !== -1) {
                         qnt_parcelas_reducao = 60
                     } else {
                         qnt_parcelas_reducao = 145
