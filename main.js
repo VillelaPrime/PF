@@ -268,7 +268,7 @@ function formatarCPF(cpf) {
 
 
 function minhaFuncaoDeRedimensionamento() {
-    let valor = document.querySelector("body > table:nth-child(2) > thead > tr > th.nome-empresa").getBoundingClientRect().width
+    let valor = document.querySelector("#parcelamentos > table.sem-villela > thead > tr > th.nome-empresa").getBoundingClientRect().width
 
     document.querySelectorAll(".com-villela  td.start").forEach(function(celula) {
         celula.style.width = `${valor}px`; // Altere para o valor de largura desejado
@@ -279,7 +279,7 @@ function minhaFuncaoDeRedimensionamento() {
 function minhaFuncaoDeObservacao(mutationsList, observer) {
     function procurarTag() {
         // Selecione a tag que você está procurando
-        var minhaTag = document.querySelector("body > table:nth-child(2) > thead > tr > th.nome-empresa");
+        var minhaTag = document.querySelector("#parcelamentos > table.sem-villela > thead > tr > th.nome-empresa");
         // Verifique se a tag existe
         if (minhaTag) {
           console.log('A tag foi encontrada:', minhaTag);
@@ -309,7 +309,3 @@ window.addEventListener("resize", minhaFuncaoDeRedimensionamento);
 
 // Certifique-se de que a função seja executada quando a página for carregada
 // para lidar com a primeira renderização
-
-  
-  
-  
