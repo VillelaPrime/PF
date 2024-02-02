@@ -2,6 +2,25 @@
 
 body{
     font-family: 'Fira Sans Condensed', sans-serif;
+    background-image: url(/logo.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top center;
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0;
+    display: grid; 
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    overflow-x: clip;
+}
+header{
+    grid-row-start: 1;
+    grid-column-start: 1;
+
+    grid-row-end: 1;
+    grid-column-end: 6;
 }
 #pesquisar {
     margin: auto;
@@ -9,6 +28,7 @@ body{
 }
 #centro {
     width: 100%;
+    padding-top:1%;
 }
 input{
     width: 20vw;
@@ -18,7 +38,9 @@ input{
 button{
     height: 2.5vw;
 }
-
+table{
+    background-color: white;
+}
 th, td {
     border-bottom: 1px solid #ddd;
     column-gap: 0;
@@ -52,11 +74,11 @@ table {
 }
 
 .com-villela {
-    margin-top: 3%;
+    margin-top: 1%;
 }
 
 .sem-villela {
-    margin-top: 5%;
+    margin-top: 2%;
 }
 
 tfoot {
@@ -65,4 +87,45 @@ tfoot {
 
 tfoot th {
     font-weight: 400;
+}
+
+.valor-reducao{
+    font-weight: 500;
+    color: green;
+}
+
+footer{
+    color: white;
+    bottom: 0;
+    grid-row-start: 8;
+    grid-column-start: 1;
+ 
+    grid-row-end: 9;
+    grid-column-end: 6;
+}
+
+footer p {
+    text-align: center;
+}
+
+main{
+    grid-row-start: 2;
+    grid-column-start: 1;
+    grid-row-end: 8;
+    grid-column-end: 6;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+}
+
+button{
+   background-color: #649eb085;
+   border: none;
+   border-radius: 5%;
+   color: white;
+   font-weight: 700;
+}
+img{
+    width: 15%;
 }
