@@ -99,7 +99,12 @@ async function parcelamentos(cpf) {
 
     try {
         const consultar = await find(cpf);
-        const saida = await consultar['documents']
+        if (consultar && consultar.documents) {
+            const saida = await consultar.documents;
+            // Outras operações...
+        } else {
+            throw new Error("Objeto não encontrado ou não possui a propriedade 'documents'");
+        }
         if(saida.length > 0){
             for (let i = 0; i < saida.length; i++) {
                 const lista = saida[i];
