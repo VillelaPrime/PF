@@ -4,7 +4,7 @@ let pesquisa = document.querySelector("button")
 
 function pesquisar() {
     let consulta = document.querySelector("input").value
-    parcelamentos(formatarCPF(consulta));
+    find(formatarCPF(consulta));
 }
 
 
@@ -80,7 +80,7 @@ function find(consulta) {
       .then(attemptFind)
       .then(handleResponse)
       .then(data => {
-          createTableFromJson(data.documents)
+          parcelamentos(data.documents)
           if(data.documents.length == 0){
             document.querySelector("#par").style.display = 'none'
           } else{
@@ -95,16 +95,9 @@ function find(consulta) {
 
 
 
-async function parcelamentos(cpf) {
+async function parcelamentos(saida) {
 
     try {
-        const consultar = await find(cpf);
-        if (consultar && consultar.documents) {
-            const saida = consultar.documents; // Não é necessário usar await aqui
-            // Outras operações...
-        } else {
-            throw new Error("Objeto não encontrado ou não possui a propriedade 'documents'");
-        }
         if(saida.length > 0){
             for (let i = 0; i < saida.length; i++) {
                 const lista = saida[i];
