@@ -106,7 +106,7 @@ async function parcelamentos(saida) {
         
                     let prima;
                     let primo;
-                    let cnpj = lista['CPF']
+                    let cpf = lista['CPF']
                     let data_parcelamento = lista['MES']
                     let modalidade = lista['TIPO']
                     let nome_empresa = lista['NOME']
