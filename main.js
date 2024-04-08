@@ -111,8 +111,8 @@ async function parcelamentos(saida) {
                     let modalidade = lista['TIPO']
                     let nome_empresa = lista['NOME']
                     let qnt_parcelas = lista['NUMERO PARCELAS']
-                    let valor_consolidado =  parseFloat(lista['VALOR PARCELAD'].replace('.', '').replace(',','.'));
-                    let valor_principal = parseFloat(lista['VALOR PRINCIPAL'].replace('.', '').replace(',','.'));
+                    let valor_consolidado =  parseFloat(lista['VALOR PARCELAD'].replace('.', '').replace(',','.').replace('"R$ ',''));
+                    let valor_principal = parseFloat(lista['VALOR PRINCIPAL'].replace('.', '').replace(',','.').replace('"R$ ',''));
                     let valor_parcelas;
                     let qnt_parcelas_reducao;
                     if (lista['TIPO'].indexOf("TRANSACAO EXCEPCIONAL") !== -1){
