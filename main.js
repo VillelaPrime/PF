@@ -98,7 +98,8 @@ function find(consulta) {
 async function parcelamentos(cpf) {
 
     try {
-        const saida = await find(cpf);
+        const consutar = await find(cpf);
+        const saida = consultar['documents']
         if(saida.length > 0){
             for (let i = 0; i < saida.length; i++) {
                 const lista = saida[i];
