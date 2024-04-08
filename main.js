@@ -100,7 +100,7 @@ async function parcelamentos(cpf) {
     try {
         const consultar = await find(cpf);
         if (consultar && consultar.documents) {
-            const saida = await consultar.documents;
+            const saida = consultar.documents; // Não é necessário usar await aqui
             // Outras operações...
         } else {
             throw new Error("Objeto não encontrado ou não possui a propriedade 'documents'");
