@@ -8,19 +8,88 @@ function pesquisar() {
 }
 
 
-async function lerArquivoJson() {
-  try {
-    const resposta = await fetch('./dados.json');
+function getAccessToken(forceRenew = false) {
+  const loginUrl = 'https://realm.mongodb.com/api/client/v2.0/app/data-jqjrc/auth/providers/local-userpass/login';
+  const credentials = {
+      username: "weriquetiao@gmail.com",
+      password: "admin123"
+  };
 
-    if (!resposta.ok) {
-      throw new Error(`Erro ao carregar o arquivo JSON: ${resposta.status}`);
-    }
-
-    return await resposta.json();
-  } catch (erro) {
-    console.error('Erro ao ler o arquivo JSON:', erro);
-    throw erro; // Rejogue o erro para que seja capturado externamente, se necessário
+  // Verifica se já temos um token armazenado e não estamos forçando a renovação
+  if (!forceRenew && localStorage.getItem('accessToken')) {
+      return Promise.resolve(localStorage.getItem('accessToken'));
   }
+
+  // Obtem um novo token
+  return fetch(loginUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(credentials)
+  })
+  .then(response => response.json())
+  .then(data => {
+      // Armazena o novo token
+      localStorage.setItem('accessToken', data.access_token);
+      return data.access_token;
+  })
+  .catch(error => {
+      console.error('Falha ao obter o token de acesso', error);
+      throw error;  // Re-throw the error to be handled by the caller
+  });
+}
+
+function find(consulta) {
+  const findOneUrl = 'https://sa-east-1.aws.data.mongodb-api.com/app/data-jqjrc/endpoint/data/v1/action/find';
+  const requestData = {
+      "collection": "colecao-parcelamentos",
+      "database": "base-parcelamentos",
+      "dataSource": "password",
+      "filter": {
+          'CPF': consulta
+      }
+  };
+
+  function attemptFind(accessToken) {
+      return fetch(findOneUrl, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(requestData)
+      });
+  }
+
+  function handleResponse(response) {
+      if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+              // Token might be invalid or expired, try refreshing it
+              return getAccessToken(true).then(attemptFind);
+          } else {
+              // Some other error, rethrow it to be handled by the final catch
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+      } else {
+          return response.json();
+      }
+  }
+
+  getAccessToken()
+      .then(attemptFind)
+      .then(handleResponse)
+      .then(data => {
+          createTableFromJson(data.documents)
+          if(data.documents.length == 0){
+            document.querySelector("#par").style.display = 'none'
+          } else{
+            document.querySelector("#par").style.display = 'block'
+          }
+      })
+      .catch(error => {
+          console.error('Failed to find', error);
+      });
 }
 
 
@@ -29,8 +98,7 @@ async function lerArquivoJson() {
 async function parcelamentos(cpf) {
 
     try {
-        const dados = await lerArquivoJson();
-        const saida = dados.filter(item => item.CPF.includes(cpf));
+        const saida = await find(cpf);
         if(saida.length > 0){
             for (let i = 0; i < saida.length; i++) {
                 const lista = saida[i];
