@@ -253,7 +253,7 @@ function inserirTabelas(cnpj, data, modalidade, nome_empresa, qnt_parcelas, valo
                 <td class="end">R$ ${formatarNumero(reducao)}</td>
             </tr>
             <tr class="valor-consolidado-villela">
-                <td class="start">VALOR APOX. APÓS ASSESSORIA</td>
+                <td class="start">VALOR APROX. APÓS ASSESSORIA</td>
                 <td class="end">R$ ${formatarNumero(principal_assessoria)}</td>
             </tr>
             <tr class="valor-parcela-villela">
