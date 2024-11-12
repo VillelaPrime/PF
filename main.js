@@ -13,7 +13,6 @@ async function consultar_pf(cpf) {
     const response = await fetch(`https://villela-pro-6405962cedab.herokuapp.com/api/consultarpf/${cpf}/`)
     const data = await response.json();
     parcelamentospf(data);
-
 }
 
 
