@@ -11,37 +11,39 @@ function pesquisar() {
 async function consultar_pf(cpf) {
 
     const response = await fetch(`https://villela-pro-6405962cedab.herokuapp.com/api/consultarpf/${cpf}/`)
-
     const data = await response.json();
-    parcelamentos(data);
+    parcelamentospf(data);
 
 }
 
 
 
 
-async function parcelamentos(saida) {
+async function parcelamentospf(saida) {
 
     try {
+        console.log('começando inserção')
+        console.log(saida.length)
         if(saida.length > 0){
             for (let i = 0; i < saida.length; i++) {
                 const lista = saida[i];
-        
-                if ((lista["SITUACAO"] === "DEFERIDO E CONSOLIDADO" || lista["SITUACAO"] === "AGUARDANDO DEFERIMENTO") && lista["NUMERO PARCELAS"] > 12) {
-        
+                console.log(lista)
+                console.log('antes na primeira condição')
+                if ((lista["SITUACAO"] === "DEFERIDO E CONSOLIDADO" || lista["SITUACAO"] === "AGUARDANDO DEFERIMENTO") && lista["QNT_PARCELAS"] > 12) {
+                    console.log('Passou na primeira condição')
                     let prima;
                     let primo;
                     let cpf = lista['CPF']
-                    let data_parcelamento = lista['MES']
-                    let modalidade = lista['TIPO']
+                    let data_parcelamento = lista['DATA_REQUERIMENTO']
+                    let MODALIDADE = lista['TIPO_PARCELAMENTO']
                     let nome_empresa = lista['NOME']
-                    let qnt_parcelas = lista['NUMERO PARCELAS']
-                    let valor_consolidado =  parseFloat(lista['VALOR PARCELAD'].replaceAll('.', '').replace(',','.').replace('R$ ',''));
-                    let valor_principal = parseFloat(lista['VALOR PRINCIPAL'].replaceAll('.', '').replace(',','.').replace('R$ ',''));
+                    let qnt_parcelas = lista['QNT_PARCELAS']
+                    let valor_consolidado =  parseFloat(lista['VALOR_CONSOLIDADO']);
+                    let valor_principal = parseFloat(lista['VALOR_PINCIPAL']);
                     let valor_parcelas;
                     let qnt_parcelas_reducao;
-                    if (lista['TIPO'].indexOf("TRANSACAO EXCEPCIONAL") !== -1){
-                        if(lista['TIPO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
+                    if (lista['TIPO_PARCELAMENTO'].indexOf("TRANSACAO EXCEPCIONAL") !== -1){
+                        if(lista['TIPO_PARCELAMENTO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
                             valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/48
                             prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.04))/48')
                         } else {
@@ -50,15 +52,15 @@ async function parcelamentos(saida) {
                         }
                         
                     } else if (lista["MODALIDADE"].indexOf("TRANSACAO EXTRAORDINARIA") !== -1){
-                        if (lista['TIPO'].indexOf("PREVIDENCIARIO") !== -1) {
+                        if (lista['TIPO_PARCELAMENTO'].indexOf("PREVIDENCIARIO") !== -1) {
                             valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/48
                             prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/48')
                         } else {
                             valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/(qnt_parcelas-12)
                             prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.01))/(qnt_parcelas-12)')
                         }
-                    } else if (lista['TIPO'].indexOf("EDITAL") !== -1){
-                        if (lista['TIPO'].indexOf("PREVIDENCIARIO") !== -1) {
+                    } else if (lista['TIPO_PARCELAMENTO'].indexOf("EDITAL") !== -1){
+                        if (lista['TIPO_PARCELAMENTO'].indexOf("PREVIDENCIARIO") !== -1) {
                             if (lista["MODALIDADE"].indexOf("PEQUENO PORTE") !== -1) {
                                 valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/48
                                 prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/48')
@@ -75,16 +77,16 @@ async function parcelamentos(saida) {
                                 prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.06))/(qnt_parcelas-6)')
                             }
                         }
-                    } else if (lista['TIPO'].indexOf("CONVENCIONAL") !== -1 || lista['TIPO'].indexOf("PARCELAMENTO DA RECUPERACAO JUDICIAL") !== -1){
-                        if (lista['TIPO'].indexOf("NAO PREVIDENCIARIA") !== -1) {
+                    } else if (lista['TIPO_PARCELAMENTO'].indexOf("CONVENCIONAL") !== -1 || lista['TIPO_PARCELAMENTO'].indexOf("PARCELAMENTO DA RECUPERACAO JUDICIAL") !== -1){
+                        if (lista['TIPO_PARCELAMENTO'].indexOf("NAO PREVIDENCIARIA") !== -1) {
                             valor_parcelas = valor_consolidado/qnt_parcelas
                             prima = console.log('valor_parcelas = valor_principal/qnt_parcelas')
                         } else {
                             valor_parcelas = valor_consolidado/60
                             prima = console.log('valor_parcelas = valor_principal/60')
                         }
-                    } else if (lista['TIPO'].indexOf("PERT") !== -1) {
-                        if (lista['TIPO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
+                    } else if (lista['TIPO_PARCELAMENTO'].indexOf("PERT") !== -1) {
+                        if (lista['TIPO_PARCELAMENTO'].indexOf("DEBITOS PREVIDENCIARIOS") !== -1) {
                             valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/60
                             prima = console.log('valor_parcelas = (valor_consolidado - (valor_consolidado*0.15))/60')
                         } else {
@@ -95,22 +97,49 @@ async function parcelamentos(saida) {
         
         
         
-                    if (lista["TIPO"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("PREVIDENCIARIO") !== -1) {
+                    if (lista["TIPO_PARCELAMENTO"].indexOf("PREVIDENCIARIO") !== -1 || lista["MODALIDADE"].indexOf("PREVIDENCIARIO") !== -1) {
                         qnt_parcelas_reducao = 60
                     } else {
                         qnt_parcelas_reducao = 145
                     }
-        
-                    inserirTabelas(cpf, data_parcelamento, modalidade, nome_empresa, qnt_parcelas, valor_consolidado, valor_principal, valor_parcelas, qnt_parcelas_reducao)
-                    
-                    
+                    console.log(`inserir${cpf,valor_principal}`)
+                    inserirTabelas(cpf, data_parcelamento, MODALIDADE, nome_empresa, qnt_parcelas, valor_consolidado, valor_principal, valor_parcelas, qnt_parcelas_reducao)
+                    document.querySelector('.cnpj').innerText = cpf
                 }
             
                 
                 
             }
         }else{
-            alert("CPF NÃO ENCONTRADO")
+            const modalContent = `
+                <dialog id="modal" class="modal">
+                    <div class="modal-content">
+                        <p>Nenhum Parcelamento Encontrado</p>
+                        <button id="closeButton">Fechar</button>
+                    </div>
+                </dialog>
+            `;
+
+            // Adicionar o modal ao corpo do documento
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+
+            // Obter referências aos elementos do modal
+            const modal = document.getElementById('modal');
+            const closeButton = modal.querySelector('.close');
+            const closeDialogButton = modal.querySelector('#closeButton');
+
+            // Função para fechar o modal
+            function fecharModal() {
+                // Fechar o modal
+                modal.close();
+                modal.remove()
+            }
+
+            // Adicionar evento de clique ao botão de fechar
+            closeDialogButton.addEventListener('click', fecharModal);
+
+            // Exibir o modal
+            modal.showModal();
         }
     } catch (erro) {
         console.error('Erro ao filtrar por CPF:', erro);
